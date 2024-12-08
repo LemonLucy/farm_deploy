@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Image, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Image, Text, StyleSheet, TouchableOpacity, ScrollView,Platform } from 'react-native';
 import CropInfo from '@/components/CropInfo/CropInfo';
 import PestInfo from '@/components/CropInfo/PestInfo';
 import DiseaseInfo from '@/components/CropInfo/DiseaseInfo';
@@ -45,7 +45,7 @@ const ManageCrops: React.FC = () => {
   const [selectedCrop, setSelectedCrop] = useState<string | null>(null);
   const [selectedTimestamp, setSelectedTimestamp] = useState<string | null>(null);
 
-  const API_BASE_URL = 'http://192.168.45.157:5000';
+  const API_BASE_URL = 'http://172.20.10.2:5000';
 
   const BUTTON_IMAGES = [
     { id: "1", image: require("../assets/images/strawberry.jpg") },
@@ -270,10 +270,16 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#F5F5F5',
     borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    ...(Platform.OS === 'web'
+      ? {
+          boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)', // Web에서 boxShadow 사용
+        }
+      : {
+          shadowColor: '#000', // iOS/Android에서 shadow* 사용
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 4,
+        }),
     elevation: 2,
     marginBottom: 70,
     zIndex: 1,

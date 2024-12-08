@@ -6,7 +6,7 @@ import { useFetchCropData } from "@/hooks/useFetchCropData";
 const screenWidth = 400;
 
 const CropAnalysis: React.FC = () => {
-  const apiUrl = "http://10.55.5.45:5000/fetch/crop-data";
+  const apiUrl = "http://172.20.10.2:5000/fetch/crop-data";
   const { cropData, loading, error } = useFetchCropData(apiUrl);
   const [selectedCrop, setSelectedCrop] = useState<string | null>(null);
   const [healthChartData, setHealthChartData] = useState({

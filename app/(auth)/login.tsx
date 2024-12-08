@@ -14,7 +14,7 @@ import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-na
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const API_BASE_URL = 'http://10.55.5.45:5000';
+const API_BASE_URL = 'http://172.20.10.2:5000';
 const FORM_WIDTH = 320; // 애니메이션 너비 상수
 
 const LoginAndSignupScreen: React.FC = () => {
