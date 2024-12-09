@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ImageBackground,
   ScrollView,
+  useWindowDimensions,
 } from "react-native";
 import axios from "axios";
 
@@ -14,7 +15,10 @@ const backgroundImage = require("@/assets/images/bg6.jpg");
 const API_BASE_URL = "http://3.39.25.137:5000";
 
 const RobotControl: React.FC = () => {
-  const [statusMessage, setStatusMessage] = useState<string>("Ready to control the robot");
+  const { width, height } = useWindowDimensions();
+  const [statusMessage, setStatusMessage] = useState<string>(
+    "Ready to control the robot"
+  );
 
   const sendCommand = async (command: "forward" | "stop" | "backward" | "spray") => {
     try {
@@ -27,49 +31,53 @@ const RobotControl: React.FC = () => {
     }
   };
 
+  const isLargeScreen = width > 800; // 기준 폭 설정 (예: 800px 이상이면 대형 화면)
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, isLargeScreen && styles.largeScreenContainer]}>
       {/* Top Section with Background Image */}
-      <View style={styles.imageContainer}>
-        <ImageBackground source={backgroundImage} style={styles.bgImage}>
-          
-        </ImageBackground>
+      <View style={[styles.imageContainer, isLargeScreen && styles.largeImageContainer]}>
+        <ImageBackground source={backgroundImage} style={styles.bgImage} />
       </View>
 
       {/* Bottom Section with Control Buttons */}
-      <View style={styles.controlContainer}>
+      <View style={[styles.controlContainer, isLargeScreen && styles.largeControlContainer]}>
         <ScrollView contentContainerStyle={styles.controlPanel}>
           {/* North (Up) Button */}
           <TouchableOpacity
-            style={styles.circularGreenButton}
+            style={[styles.circularGreenButton, isLargeScreen && styles.largeButton]}
             onPress={() => sendCommand("forward")}
           >
             <Text style={styles.buttonText}>↑</Text>
           </TouchableOpacity>
 
-          <View style={styles.middleRow}>
+          <View style={[styles.middleRow, isLargeScreen && styles.largeMiddleRow]}>
             {/* West (Left) Button */}
-            <TouchableOpacity style={styles.circularGreenButton}>
+            <TouchableOpacity
+              style={[styles.circularGreenButton, isLargeScreen && styles.largeButton]}
+            >
               <Text style={styles.buttonText}>←</Text>
             </TouchableOpacity>
 
             {/* STOP Button */}
             <TouchableOpacity
-              style={styles.redButton}
+              style={[styles.redButton, isLargeScreen && styles.largeButton]}
               onPress={() => sendCommand("stop")}
             >
               <Text style={styles.buttonText}>STOP</Text>
             </TouchableOpacity>
 
             {/* East (Right) Button */}
-            <TouchableOpacity style={styles.circularGreenButton}>
+            <TouchableOpacity
+              style={[styles.circularGreenButton, isLargeScreen && styles.largeButton]}
+            >
               <Text style={styles.buttonText}>→</Text>
             </TouchableOpacity>
           </View>
 
           {/* South (Down) Button */}
           <TouchableOpacity
-            style={styles.circularGreenButton}
+            style={[styles.circularGreenButton, isLargeScreen && styles.largeButton]}
             onPress={() => sendCommand("backward")}
           >
             <Text style={styles.buttonText}>↓</Text>
@@ -77,7 +85,7 @@ const RobotControl: React.FC = () => {
 
           {/* Spray Pesticide Button */}
           <TouchableOpacity
-            style={styles.sprayButton}
+            style={[styles.sprayButton, isLargeScreen && styles.largeSprayButton]}
             onPress={() => sendCommand("spray")}
           >
             <Text style={styles.buttonText}>Spray Pesticide</Text>
@@ -91,35 +99,28 @@ const RobotControl: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    //backgroundColor: "#2E7D32",
+  },
+  largeScreenContainer: {
+    flexDirection: "row", // 대형 화면에서는 이미지와 버튼을 나란히 배치
   },
   imageContainer: {
     flex: 1.5,
+  },
+  largeImageContainer: {
+    flex: 1, // 화면 비율에 맞게 조정
   },
   bgImage: {
     flex: 1,
     justifyContent: "center",
   },
-  headerContainer: {
-    alignItems: "center",
-  },
-  header: {
-    fontSize: 30,
-    fontWeight: "bold",
-    color:  "#FFFFFF",
-    //textAlign: "center",
-  },
-  statusMessage: {
-    fontSize: 20,
-    color: "#FFFFFF",
-    marginTop: 5,
-    textAlign: "center",
-  },
   controlContainer: {
     flex: 1,
-    //backgroundColor: "#FFFFFF",
     backgroundColor: "#2E7D32",
-    padding: 30,
+    padding: 20,
+  },
+  largeControlContainer: {
+    flex: 1,
+    padding: 40, // 여백 증가
   },
   controlPanel: {
     alignItems: "center",
@@ -131,17 +132,25 @@ const styles = StyleSheet.create({
     width: "100%",
     marginVertical: 10,
   },
+  largeMiddleRow: {
+    justifyContent: "space-evenly", // 버튼 간 간격 조정
+  },
   circularGreenButton: {
     backgroundColor: "#6dbb63",
-    width: 100,
+    width: 80,
     height: 50,
-    borderRadius: 30,
+    borderRadius: 25,
     justifyContent: "center",
     alignItems: "center",
   },
+  largeButton: {
+    width: 100,
+    height: 60,
+    borderRadius: 30,
+  },
   redButton: {
     backgroundColor: "red",
-    width: 100,
+    width: 80,
     height: 50,
     justifyContent: "center",
     alignItems: "center",
@@ -149,14 +158,18 @@ const styles = StyleSheet.create({
   },
   sprayButton: {
     backgroundColor: "#4f9d69",
-    paddingVertical: 15,
-    paddingHorizontal: 30,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     borderRadius: 10,
-    marginTop: 30,
+    marginTop: 20,
+  },
+  largeSprayButton: {
+    paddingVertical: 15,
+    paddingHorizontal: 40,
   },
   buttonText: {
     color: "#FFFFFF",
-    fontSize: 25,
+    fontSize: 20,
     fontWeight: "bold",
     textAlign: "center",
   },

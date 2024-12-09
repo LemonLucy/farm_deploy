@@ -7,11 +7,15 @@ import {
   Button,
   Modal,
   TouchableOpacity,
+  useWindowDimensions,
 } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import { Calendar } from "react-native-calendars";
 
 const CropCalendar = () => {
+  const { width, height } = useWindowDimensions(); // 현재 화면 크기 가져오기
+  const isLargeScreen = width > 800; // 큰 화면 기준 설정 (800px 초과)
+
   const [cropOpen, setCropOpen] = useState(false);
   const [selectedCrop, setSelectedCrop] = useState<string | null>(null);
   const [infoOpen, setInfoOpen] = useState(false);
@@ -51,14 +55,9 @@ const CropCalendar = () => {
         const data = await response.json();
         console.log("Fetched Data:", data);
 
-        if (!Array.isArray(data)) {
-          console.error("Unexpected data format:", data);
-          return;
-        }
-
         const combinedList = data
           .flatMap((record: any, index: number) => {
-            const pest = record?.pest_information?.pest_name && record?.pest_information?.pest_name !== "None"
+            const pest = record?.pest_information?.pest_name
               ? {
                   name: record.pest_information.pest_name,
                   severity: record.pest_information.severity,
@@ -69,7 +68,7 @@ const CropCalendar = () => {
                 }
               : null;
 
-            const disease = record?.disease_information?.disease_name && record?.disease_information?.disease_name !== "None"
+            const disease = record?.disease_information?.disease_name
               ? {
                   name: record.disease_information.disease_name,
                   severity: record.disease_information.severity,
@@ -137,93 +136,69 @@ const CropCalendar = () => {
     console.log("Clicked Date Info:", dateInfo);
     if (dateInfo) {
       setSelectedDateInfo(dateInfo.info || null);
-      setModalVisible(true); // 모달 표시
+      setModalVisible(true);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>작물 방제 캘린더</Text>
-
-      <Calendar
-        markedDates={markedDates}
-        onDayPress={handleDayPress}
-        theme={{
-          selectedDayBackgroundColor: "#00adf5",
-          todayTextColor: "#00adf5",
-          arrowColor: "orange",
-        }}
-      />
-
-      <Text style={styles.label}>작물 선택</Text>
-      <DropDownPicker
-        open={cropOpen}
-        value={selectedCrop}
-        items={cropOptions}
-        setOpen={setCropOpen}
-        setValue={setSelectedCrop}
-        placeholder="작물을 선택하세요"
-        style={styles.dropdown}
-        dropDownContainerStyle={styles.dropdownContainer}
-      />
-
-      {infoOptions.length > 0 && (
-        <>
-          <Text style={styles.label}>병충해/질병 선택</Text>
-          <DropDownPicker
-            open={infoOpen}
-            value={selectedInfo}
-            items={infoOptions.map((info: any) => ({
-              label: `${info.type}: ${info.name} (${info.severity})`,
-              value: info.name,
-              key: info.id,
-            }))}
-            setOpen={setInfoOpen}
-            setValue={setSelectedInfo}
-            placeholder="병충해 또는 질병을 선택하세요"
-            style={styles.dropdown}
-            dropDownContainerStyle={styles.dropdownContainer}
-          />
-        </>
-      )}
-
-      <Text style={styles.label}>방제 시작 날짜</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="YYYY-MM-DD"
-        value={startDate}
-        onChangeText={setStartDate}
-      />
-
-      <Button title="입력 완료" onPress={handleApplySchedule} />
-
-      <Modal
-        visible={modalVisible}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            {selectedDateInfo && (
-              <>
-                <Text style={styles.modalTitle}>상세 정보</Text>
-                <Text>이름: {selectedDateInfo.name}</Text>
-                <Text>유형: {selectedDateInfo.type}</Text>
-                <Text>심각도: {selectedDateInfo.severity}</Text>
-                <Text>농약: {selectedDateInfo.pesticide}</Text>
-                {selectedDateInfo.symptoms && <Text>증상: {selectedDateInfo.symptoms}</Text>}
-              </>
-            )}
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setModalVisible(false)}
-            >
-              <Text style={styles.closeButtonText}>닫기</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+    <View
+      style={[
+        styles.container,
+        isLargeScreen && { flexDirection: "row", paddingHorizontal: 40 },
+      ]}
+    >
+      <View style={[styles.leftPanel, isLargeScreen && { flex: 1 }]}>
+        <Text style={styles.title}>작물 방제 캘린더</Text>
+        <Calendar
+          markedDates={markedDates}
+          onDayPress={handleDayPress}
+          theme={{
+            selectedDayBackgroundColor: "#00adf5",
+            todayTextColor: "#00adf5",
+            arrowColor: "orange",
+          }}
+        />
+      </View>
+      <View style={[styles.rightPanel, isLargeScreen && { flex: 1 }]}>
+        <Text style={styles.label}>작물 선택</Text>
+        <DropDownPicker
+          open={cropOpen}
+          value={selectedCrop}
+          items={cropOptions}
+          setOpen={setCropOpen}
+          setValue={setSelectedCrop}
+          placeholder="작물을 선택하세요"
+          style={styles.dropdown}
+          dropDownContainerStyle={styles.dropdownContainer}
+        />
+        {infoOptions.length > 0 && (
+          <>
+            <Text style={styles.label}>병충해/질병 선택</Text>
+            <DropDownPicker
+              open={infoOpen}
+              value={selectedInfo}
+              items={infoOptions.map((info: any) => ({
+                label: `${info.type}: ${info.name} (${info.severity})`,
+                value: info.name,
+                key: info.id,
+              }))}
+              setOpen={setInfoOpen}
+              setValue={setSelectedInfo}
+              placeholder="병충해 또는 질병을 선택하세요"
+              style={styles.dropdown}
+              dropDownContainerStyle={styles.dropdownContainer}
+            />
+          </>
+        )}
+        <Text style={styles.label}>방제 시작 날짜</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="YYYY-MM-DD"
+          value={startDate}
+          onChangeText={setStartDate}
+        />
+        <Button title="입력 완료" onPress={handleApplySchedule} />
+      </View>
     </View>
   );
 };
@@ -261,33 +236,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     backgroundColor: "#fff",
   },
-  modalContainer: {
+  leftPanel: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
-  modalContent: {
-    width: "80%",
-    backgroundColor: "#fff",
-    padding: 20,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  closeButton: {
+  rightPanel: {
+    flex: 1,
     marginTop: 20,
-    padding: 10,
-    backgroundColor: "#00adf5",
-    borderRadius: 5,
-  },
-  closeButtonText: {
-    color: "#fff",
-    fontWeight: "bold",
   },
 });
 

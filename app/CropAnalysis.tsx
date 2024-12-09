@@ -1,11 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
-import { LineChart, BarChart, PieChart } from "react-native-chart-kit";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  useWindowDimensions,
+} from "react-native";
+import { LineChart, PieChart } from "react-native-chart-kit";
 import { useFetchCropData } from "@/hooks/useFetchCropData";
 
-const screenWidth = 400;
-
 const CropAnalysis: React.FC = () => {
+  const { width } = useWindowDimensions(); // 화면 크기 가져오기
+  const isLargeScreen = width > 800; // 큰 화면 기준 설정
+  const chartWidth = isLargeScreen ? 600 : width * 0.9; // 차트 크기 동적 설정
+
   const apiUrl = "http://3.39.25.137:5000/fetch/crop-data";
   const { cropData, loading, error } = useFetchCropData(apiUrl);
   const [selectedCrop, setSelectedCrop] = useState<string | null>(null);
@@ -13,15 +22,6 @@ const CropAnalysis: React.FC = () => {
     labels: ["No Data"],
     datasets: [{ data: [0] }],
   });
-  const [pestChartData, setPestChartData] = useState({
-    labels: ["No Data"],
-    datasets: [{ data: [0] }],
-  });
-  const [diseaseChartData, setDiseaseChartData] = useState({
-    labels: ["No Data"],
-    datasets: [{ data: [0] }],
-  });
-
   const [pieChartData, setPieChartData] = useState<
     { name: string; population: number; color: string; legendFontColor: string; legendFontSize: number }[]
   >([]);
@@ -30,7 +30,6 @@ const CropAnalysis: React.FC = () => {
     new Map(cropData.map((crop) => [crop.crop_id, crop.crop_information.name])).entries()
   );
 
-  // Pie Chart 데이터 생성 함수
   const generatePieChartData = () => {
     const colors = ["#FF6384", "#36A2EB", "#FFCE56", "#4CAF50", "#FF5722"];
     const aggregatedData = uniqueCrops.map(([cropId, cropName], index) => {
@@ -54,7 +53,6 @@ const CropAnalysis: React.FC = () => {
     setPieChartData(aggregatedData);
   };
 
-  // 차트 데이터 업데이트 함수
   const updateChartData = (cropId: string) => {
     const filteredCrops = cropData.filter((crop) => crop.crop_id === cropId);
 
@@ -62,32 +60,15 @@ const CropAnalysis: React.FC = () => {
     const healthScores = filteredCrops.map(
       (crop) => crop.crop_health_information?.overall_health_score || 0
     );
-    const pestCounts = filteredCrops.map(
-      (crop) => crop.pest_information?.pest_count || 0
-    );
-    const diseaseScores = filteredCrops.map(
-      (crop) => crop.disease_information?.severity_score || 0
-    );
 
     setHealthChartData({
       labels: timestamps.length > 0 ? timestamps : ["No Data"],
       datasets: [{ data: healthScores.length > 0 ? healthScores : [0] }],
     });
 
-    setPestChartData({
-      labels: timestamps.length > 0 ? timestamps : ["No Data"],
-      datasets: [{ data: pestCounts.length > 0 ? pestCounts : [0] }],
-    });
-
-    setDiseaseChartData({
-      labels: timestamps.length > 0 ? timestamps : ["No Data"],
-      datasets: [{ data: diseaseScores.length > 0 ? diseaseScores : [0] }],
-    });
-
     setSelectedCrop(cropId);
   };
 
-  // 첫 로드 시 Total Analysis 데이터를 표시
   useEffect(() => {
     if (uniqueCrops.length > 0 && cropData.length > 0) {
       generatePieChartData();
@@ -121,7 +102,7 @@ const CropAnalysis: React.FC = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, isLargeScreen && styles.largeContainer]}>
       <ScrollView>
         <Text style={styles.title}>Total Crop Analysis</Text>
 
@@ -129,7 +110,7 @@ const CropAnalysis: React.FC = () => {
         <Text style={styles.chartTitle}>Pest and Disease Rate</Text>
         <PieChart
           data={pieChartData}
-          width={screenWidth}
+          width={chartWidth}
           height={220}
           chartConfig={{
             backgroundColor: "#1cc910",
@@ -163,7 +144,7 @@ const CropAnalysis: React.FC = () => {
         <Text style={styles.chartTitle}>Health Score Over Time</Text>
         <LineChart
           data={healthChartData}
-          width={screenWidth}
+          width={chartWidth}
           height={220}
           yAxisLabel=""
           yAxisSuffix=" pts"
@@ -200,6 +181,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
+  },
+  largeContainer: {
+    paddingHorizontal: 40,
   },
   title: {
     fontSize: 24,
