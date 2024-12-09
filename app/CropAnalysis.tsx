@@ -13,7 +13,7 @@ import { useFetchCropData } from "@/hooks/useFetchCropData";
 const CropAnalysis: React.FC = () => {
   const { width } = useWindowDimensions(); // Get screen dimensions
   const isLargeScreen = width > 800; // Threshold for large screens
-  const chartWidth = isLargeScreen ? 400 : width * 0.9; // Adjust chart size dynamically
+  const chartWidth = isLargeScreen ? Math.min(600, width * 0.8) : Math.min(400, width * 0.9); // Adjust chart size dynamically
 
   const apiUrl = "http://3.39.25.137:5000/fetch/crop-data";
   const { cropData, loading, error } = useFetchCropData(apiUrl);
@@ -192,8 +192,7 @@ const styles = StyleSheet.create({
   },
   largeScreenChartsContainer: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    //justifyContent: "space-between",
+    justifyContent: "space-between",
 
   },
   chartWrapper: {

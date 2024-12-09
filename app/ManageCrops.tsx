@@ -332,8 +332,8 @@ const styles = StyleSheet.create({
   },
   cropImage: {
     width: "100%", // 반응형으로 전체 너비에 맞게 설정
-    maxWidth: 300, // 최대 너비 설정
-    height: 200, // 고정 높이 설정
+    //maxWidth: 300, // 최대 너비 설정
+    //height: 200, // 고정 높이 설정
     resizeMode: "contain", // 이미지가 잘리지 않도록 설정
     borderRadius: 10,
     marginVertical: 10,
@@ -359,7 +359,7 @@ const styles = StyleSheet.create({
   },
   largeInfoContainer: {
     width: "100%", // 큰 화면에서 더 넓게
-    maxWidth: "80%",
+    //maxWidth: "80%",
     padding: 20,
   },
   largeCropImage: {
