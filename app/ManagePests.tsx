@@ -23,7 +23,7 @@ const CropCalendar = () => {
   const [selectedDateInfo, setSelectedDateInfo] = useState<any | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
 
-  const API_BASE_URL = "http://172.20.10.2:5000";
+  const API_BASE_URL = "http://3.39.25.137:5000";
 
   const cropOptions = [
     { label: "딸기", value: "strawberry" },
