@@ -116,7 +116,9 @@ const styles = StyleSheet.create({
   },
   bgImage: {
     flex: 1,
-    resizeMode: "cover",
+    width: 'auto',
+    height: 'auto'
+    //resizeMode: "cover",
   },
   controlContainer: {
     flex: 1,

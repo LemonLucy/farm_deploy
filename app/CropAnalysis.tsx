@@ -192,11 +192,14 @@ const styles = StyleSheet.create({
   },
   largeScreenChartsContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "space-around",
+    //justifyContent: "space-between",
+
   },
   chartWrapper: {
     marginVertical: 10,
     alignItems: "center",
+    width: "90%",
   },
   title: {
     fontSize: 24,
