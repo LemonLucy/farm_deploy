@@ -172,6 +172,54 @@ const ManageCrops: React.FC = () => {
     );
   }
 
+  // Render timestamp options for a selected crop
+  if (selectedCrop && !selectedTimestamp) {
+    const timestamps = Object.keys(groupedData[selectedCrop]).sort(
+      (a, b) => new Date(a).getTime() - new Date(b).getTime()
+    );
+    const totalCells = 35;
+    const calendarCells = Array.from({ length: totalCells }, (_, index) => timestamps[index] || null);
+
+    return (
+      <View style={styles.bgcontainer}>
+        <Text style={styles.title}>Crop Status</Text>
+        <View style={styles.calendarContainer}>
+          {calendarCells.map((timestamp, index) => {
+            const data = timestamp ? groupedData[selectedCrop][timestamp] : null;
+            const isUnhealthy =
+              data &&
+              (
+                (data.pest_information.pest_name !== "None" && data.pest_information.pest_name !== "N/A") ||
+                (data.disease_information.disease_name !== "None" && data.disease_information.disease_name !== "N/A")
+              );
+            return (
+              <TouchableOpacity
+                key={index}
+                style={[
+                  styles.calendarCell,
+                  { backgroundColor: timestamp ? data?.healthColor || "#E0E0E0" : "#E0E0E0" },
+                ]}
+                onPress={() => timestamp && setSelectedTimestamp(timestamp)}
+                disabled={!timestamp}
+              >
+                <Text style={styles.cellText}>
+                  {isUnhealthy ? (data?.pest_information.pest_name !== "N/A" && data?.pest_information.pest_name !== "None"
+                    ? data?.pest_information.pest_name
+                    : data?.disease_information.disease_name !== "N/A" && data?.disease_information.disease_name !== "None"
+                    ? data?.disease_information.disease_name
+                    : "") : ""}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+        <TouchableOpacity style={styles.backButton} onPress={() => setSelectedCrop(null)}>
+          <Text style={styles.buttonText}>Back</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   return (
     <View style={[styles.bgcontainer, isLargeScreen && styles.largeContainer]}>
       <ScrollView contentContainerStyle={styles.container}>
@@ -297,6 +345,44 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     textAlign: "center",
+  },
+  calendarContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    width: "100%",
+    paddingHorizontal: 10,
+  },
+  calendarCell: {
+    width: "20%", // 한 줄에 5개의 셀
+    height: 80, // 셀 고정 높이
+    margin: 5, // 셀 간격
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#E0E0E0",
+    borderWidth: 1, // 셀 테두리
+    borderColor: "#000",
+    borderRadius: 8, // 둥근 테두리
+  },
+  largeCalendarCell: {
+    width: "16%", // 더 큰 화면에서는 한 줄에 6개의 셀
+    height: 100,
+  },
+  cellText: {
+    fontSize: 14,
+    color: "#000",
+    textAlign: "center",
+  },
+  timestampText: {
+    fontSize: 12,
+    color: "#FFF",
+    textAlign: "center",
+  },
+  emptyCellText: {
+    color: "#CCC",
+  },
+  activeCell: {
+    backgroundColor: "#4CAF50", // 활성화된 셀 색상
   },
 });
 
