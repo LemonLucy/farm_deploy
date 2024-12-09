@@ -22,6 +22,14 @@ const CropAnalysis: React.FC = () => {
     labels: ["No Data"],
     datasets: [{ data: [0] }],
   });
+  const [pestChartData, setPestChartData] = useState({
+    labels: ["No Data"],
+    datasets: [{ data: [0] }],
+  });
+  const [diseaseChartData, setDiseaseChartData] = useState({
+    labels: ["No Data"],
+    datasets: [{ data: [0] }],
+  });
   const [pieChartData, setPieChartData] = useState<
     { name: string; population: number; color: string; legendFontColor: string; legendFontSize: number }[]
   >([]);
@@ -60,15 +68,32 @@ const CropAnalysis: React.FC = () => {
     const healthScores = filteredCrops.map(
       (crop) => crop.crop_health_information?.overall_health_score || 0
     );
+    const pestCounts = filteredCrops.map(
+      (crop) => crop.pest_information?.pest_count || 0
+    );
+    const diseaseScores = filteredCrops.map(
+      (crop) => crop.disease_information?.severity_score || 0
+    );
 
     setHealthChartData({
       labels: timestamps.length > 0 ? timestamps : ["No Data"],
       datasets: [{ data: healthScores.length > 0 ? healthScores : [0] }],
     });
 
+    setPestChartData({
+      labels: timestamps.length > 0 ? timestamps : ["No Data"],
+      datasets: [{ data: pestCounts.length > 0 ? pestCounts : [0] }],
+    });
+
+    setDiseaseChartData({
+      labels: timestamps.length > 0 ? timestamps : ["No Data"],
+      datasets: [{ data: diseaseScores.length > 0 ? diseaseScores : [0] }],
+    });
+
     setSelectedCrop(cropId);
   };
 
+  // 첫 로드 시 Total Analysis 데이터를 표시
   useEffect(() => {
     if (uniqueCrops.length > 0 && cropData.length > 0) {
       generatePieChartData();

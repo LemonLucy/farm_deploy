@@ -70,6 +70,42 @@ const ManageCrops: React.FC = () => {
     { id: "6", image: require("../assets/images/cucum.jpg") },
   ];
 
+  const determineHealthStatus = (data: CropData) => {
+    const pestSeverity = data.pest_information?.severity || "None";
+    const diseaseSeverity = data.disease_information?.severity || "None";
+    const overallHealth = data.crop_health_information?.overall_health || "Unknown";
+
+    let conditionsMet = 0;
+
+    if (pestSeverity === "None") conditionsMet += 1;
+    if (diseaseSeverity === "None") conditionsMet += 1;
+    if (overallHealth === "Healthy") conditionsMet += 1;
+
+    if (conditionsMet === 3) {
+      return { status: "Healthy", color: "#4CAF50" }; // Green
+    } else if (conditionsMet === 2) {
+      return { status: "Moderate", color: "#FFEB3B" }; // Yellow
+    } else {
+      return { status: "Unhealthy", color: "#F44336" }; // Red
+    }
+  };
+
+  // Group data by crop_id and timestamp
+  const groupByCropAndTimestamp = (data: CropData[]) => {
+    const grouped: { [cropId: string]: { [timestamp: string]: CropData } } = {};
+
+    data.forEach((item) => {
+      const cropId = item.crop_id;
+      const timestamp = item.timestamp;
+
+      if (!grouped[cropId]) grouped[cropId] = {};
+      grouped[cropId][timestamp] = item;
+    });
+
+    return grouped;
+  };
+
+  // Load crop data
   useEffect(() => {
     const loadCropData = async () => {
       try {
@@ -91,26 +127,6 @@ const ManageCrops: React.FC = () => {
     loadCropData();
   }, []);
 
-  const determineHealthStatus = (data: CropData) => {
-    const pestSeverity = data.pest_information?.severity || "None";
-    const diseaseSeverity = data.disease_information?.severity || "None";
-    const overallHealth = data.crop_health_information?.overall_health || "Unknown";
-
-    let conditionsMet = 0;
-
-    if (pestSeverity === "None") conditionsMet += 1;
-    if (diseaseSeverity === "None") conditionsMet += 1;
-    if (overallHealth === "Healthy") conditionsMet += 1;
-
-    if (conditionsMet === 3) {
-      return { status: "Healthy", color: "#4CAF50" }; // Green
-    } else if (conditionsMet === 2) {
-      return { status: "Moderate", color: "#FFEB3B" }; // Yellow
-    } else {
-      return { status: "Unhealthy", color: "#F44336" }; // Red
-    }
-  };
-
   if (!cropData.length) {
     return (
       <View style={styles.bgcontainer}>
@@ -119,13 +135,11 @@ const ManageCrops: React.FC = () => {
     );
   }
 
+  const groupedData = groupByCropAndTimestamp(cropData);
+
   if (selectedCrop && selectedTimestamp) {
-    const groupedData = cropData.filter(
-      (data) => data.crop_id === selectedCrop && data.timestamp === selectedTimestamp
-    );
-
-    const detailedData = groupedData[0];
-
+    const detailedData = groupedData[selectedCrop][selectedTimestamp];
+  
     if (!detailedData) {
       console.error("No data found for timestamp:", selectedTimestamp);
       return null;
