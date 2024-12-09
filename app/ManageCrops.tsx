@@ -269,7 +269,6 @@ const ManageCrops: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  // 이미 기존에 작성된 스타일은 유지됩니다
   bgcontainer: {
     flex: 1,
     backgroundColor: "#2E7D32",
@@ -277,16 +276,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   largeScreenContainer: {
-    paddingHorizontal: 50, // 큰 화면에서 여백 추가
-  },
-  largeContainer: {
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    padding: 20,
-  },
-  largeScreenContent: {
-    width: "80%", // 큰 화면에서는 넓게 표시
-    alignSelf: "center",
+    paddingHorizontal: 60, // 큰 화면에서 좌우 여백
   },
   container: {
     flexGrow: 1,
@@ -295,8 +285,17 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     width: "100%",
   },
+  largeContainer: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    padding: 20, // 이미 존재하는 스타일, 중복 제거
+  },
+  largeScreenContent: {
+    width: "70%", // 큰 화면에서 중앙 정렬된 넓은 컨테이너
+    alignSelf: "center",
+  },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: "bold",
     marginBottom: 20,
     textAlign: "center",
@@ -309,7 +308,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   largeCropRowContainer: {
-    justifyContent: "space-between",
+    justifyContent: "space-between", // 큰 화면에서 균등 간격
   },
   cropImageButton: {
     margin: 10,
@@ -331,40 +330,68 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
   },
   cropImage: {
-    width: "100%", // 반응형으로 전체 너비에 맞게 설정
-    //maxWidth: 300, // 최대 너비 설정
-    //height: 200, // 고정 높이 설정
-    resizeMode: "contain", // 이미지가 잘리지 않도록 설정
+    width: "100%",
+    maxWidth: 300, // 작은 화면 최대 크기
+    height: 200,
+    resizeMode: "contain",
     borderRadius: 10,
     marginVertical: 10,
   },
+  largeCropImage: {
+    maxWidth: 500, // 큰 화면에서 더 큰 이미지
+    height: 300,
+  },
   infoContainer: {
-    width: "90%", // 화면 크기에 따라 적응
-    maxWidth: 600, // 큰 화면에서 최대 너비 설정
-    padding: 15,
+    width: "90%",
+    maxWidth: 600, // 작은 화면에서 최대 넓이 제한
+    padding: 20,
     backgroundColor: "#F5F5F5",
     borderRadius: 10,
     marginBottom: 20,
     ...(Platform.OS === "web"
       ? {
-          boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)", // 웹에서의 그림자 효과
+          boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)", // 웹용 그림자
         }
       : {
-          shadowColor: "#000", // iOS/Android에서의 그림자 효과
+          shadowColor: "#000", // iOS/Android용 그림자
           shadowOffset: { width: 0, height: 2 },
           shadowOpacity: 0.1,
           shadowRadius: 4,
         }),
-    elevation: 2, // Android에서 그림자 높이
+    elevation: 2, // Android 그림자 효과
   },
   largeInfoContainer: {
     width: "100%", // 큰 화면에서 더 넓게
-    //maxWidth: "80%",
-    padding: 20,
+    maxWidth: "85%",
+    padding: 30,
   },
-  largeCropImage: {
-    maxWidth: 500, // 큰 화면에서는 더 큰 이미지
-    height: 300,
+  calendarContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    width: "100%",
+    paddingHorizontal: 10,
+  },
+  calendarCell: {
+    width: "20%", // 한 줄에 5개 셀
+    height: 80, // 셀 고정 높이
+    margin: 5,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#E0E0E0",
+    borderWidth: 1,
+    borderColor: "#000",
+    borderRadius: 8,
+  },
+  largeCalendarCell: {
+    width: "16%", // 큰 화면에서는 더 작은 비율
+    height: 100,
+    margin: 5,
+  },
+  cellText: {
+    fontSize: 14,
+    color: "#000",
+    textAlign: "center",
   },
   backButton: {
     position: "absolute",
@@ -382,45 +409,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
   },
-  calendarContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    width: "100%",
-    paddingHorizontal: 10,
-    overflow: "scroll",
-  },
-  calendarCell: {
-    width: "20%", // 한 줄에 5개의 셀
-    height: '15%', // 셀 고정 높이
-    margin: 5, // 셀 간격
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#E0E0E0",
-    borderWidth: 1, // 셀 테두리
-    borderColor: "#000",
-    borderRadius: 8, // 둥근 테두리
-  },
-  largeCalendarCell: {
-    width: "16%", // 더 큰 화면에서는 한 줄에 6개의 셀
-    height: 100,
-    margin: 5
-  },
-  cellText: {
-    fontSize: 14,
-    color: "#000",
-    textAlign: "center",
-  },
   timestampText: {
     fontSize: 12,
     color: "#FFF",
     textAlign: "center",
-  },
-  emptyCellText: {
-    color: "#CCC",
-  },
-  activeCell: {
-    backgroundColor: "#4CAF50", // 활성화된 셀 색상
   },
 });
 
