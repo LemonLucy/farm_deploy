@@ -146,29 +146,48 @@ const ManageCrops: React.FC = () => {
     }
 
     return (
-      <View style={styles.bgcontainer}>
-        <ScrollView contentContainerStyle={styles.container}>
-          <Text style={styles.title}>Crop Details</Text>
-          <View style={styles.infoContainer}>
-            <CropInfo crop={detailedData.crop_information} />
-            <PestInfo pest={detailedData.pest_information} />
-            <DiseaseInfo disease={detailedData.disease_information} />
-            <HealthStatus health={detailedData.crop_health_information} />
-            {detailedData.image_url && (
-              <Image
-                source={{ uri: detailedData.image_url }}
-                style={styles.cropImage}
-              />
-            )}
-          </View>
-        </ScrollView>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => setSelectedTimestamp(null)}
-        >
-          <Text style={styles.buttonText}>Back</Text>
-        </TouchableOpacity>
-      </View>
+      <View
+  style={[
+    styles.bgcontainer,
+    isLargeScreen && styles.largeScreenContainer, // 큰 화면일 때 스타일 추가
+  ]}
+>
+  <ScrollView
+    contentContainerStyle={[
+      styles.container,
+      isLargeScreen && styles.largeScreenContent, // 큰 화면일 때 스타일 추가
+    ]}
+  >
+    <Text style={styles.title}>Crop Details</Text>
+    <View
+      style={[
+        styles.infoContainer,
+        isLargeScreen && styles.largeInfoContainer, // 큰 화면일 때 스타일 추가
+      ]}
+    >
+      <CropInfo crop={detailedData.crop_information} />
+      <PestInfo pest={detailedData.pest_information} />
+      <DiseaseInfo disease={detailedData.disease_information} />
+      <HealthStatus health={detailedData.crop_health_information} />
+      {detailedData.image_url && (
+        <Image
+          source={{ uri: detailedData.image_url }}
+          style={[
+            styles.cropImage,
+            isLargeScreen && styles.largeCropImage, // 큰 화면일 때 이미지 크기 조정
+          ]}
+        />
+      )}
+    </View>
+  </ScrollView>
+  <TouchableOpacity
+    style={styles.backButton}
+    onPress={() => setSelectedTimestamp(null)}
+  >
+    <Text style={styles.buttonText}>Back</Text>
+  </TouchableOpacity>
+</View>
+
     );
   }
 
@@ -257,10 +276,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  largeScreenContainer: {
+    paddingHorizontal: 50, // 큰 화면에서 여백 추가
+  },
   largeContainer: {
     flexDirection: "row",
     justifyContent: "space-evenly",
     padding: 20,
+  },
+  largeScreenContent: {
+    width: "80%", // 큰 화면에서는 넓게 표시
+    alignSelf: "center",
   },
   container: {
     flexGrow: 1,
@@ -331,6 +357,15 @@ const styles = StyleSheet.create({
         }),
     elevation: 2, // Android에서 그림자 높이
   },
+  largeInfoContainer: {
+    width: "100%", // 큰 화면에서 더 넓게
+    maxWidth: "80%",
+    padding: 20,
+  },
+  largeCropImage: {
+    maxWidth: 500, // 큰 화면에서는 더 큰 이미지
+    height: 300,
+  },
   backButton: {
     position: "absolute",
     bottom: 20,
@@ -367,7 +402,7 @@ const styles = StyleSheet.create({
     borderRadius: 8, // 둥근 테두리
   },
   largeCalendarCell: {
-    width: "15%", // 더 큰 화면에서는 한 줄에 6개의 셀
+    width: "16%", // 더 큰 화면에서는 한 줄에 6개의 셀
     height: 100,
     margin: 5
   },
