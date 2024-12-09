@@ -74,7 +74,9 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   fullScreenBackground: {
     flex: 1,
-    resizeMode: 'cover', // Ensure background fits the screen
+    width: '100%',
+    height: '100%'
+    //resizeMode: 'cover', // Ensure background fits the screen
   },
   container: {
     flex: 1,

@@ -197,6 +197,7 @@ const ManageCrops: React.FC = () => {
                 key={index}
                 style={[
                   styles.calendarCell,
+                  isLargeScreen && styles.largeCalendarCell, // 큰 화면에서는 더 큰 셀
                   { backgroundColor: timestamp ? data?.healthColor || "#E0E0E0" : "#E0E0E0" },
                 ]}
                 onPress={() => timestamp && setSelectedTimestamp(timestamp)}
@@ -352,10 +353,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: "100%",
     paddingHorizontal: 10,
+    overflow: "scroll",
   },
   calendarCell: {
     width: "20%", // 한 줄에 5개의 셀
-    height: 80, // 셀 고정 높이
+    height: '15%', // 셀 고정 높이
     margin: 5, // 셀 간격
     justifyContent: "center",
     alignItems: "center",
@@ -365,8 +367,9 @@ const styles = StyleSheet.create({
     borderRadius: 8, // 둥근 테두리
   },
   largeCalendarCell: {
-    width: "16%", // 더 큰 화면에서는 한 줄에 6개의 셀
+    width: "15%", // 더 큰 화면에서는 한 줄에 6개의 셀
     height: 100,
+    margin: 5
   },
   cellText: {
     fontSize: 14,
